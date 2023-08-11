@@ -1,3 +1,4 @@
+set -ex
 # Uncomment the following lines if you are in China
 #echo 'deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free
 #      # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free
@@ -66,13 +67,6 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B53DC80D13EDEF05
 apt-get update
 apt-get install -y kubelet kubeadm kubectl cri-tools
 
-mkdir -p /etc/systemd/system/containerd.service.d/
-echo '[Service]
-      Environment=HTTP_PROXY=192.168.31.229:20171
-      Environment=HTTPS_PROXY=192.168.31.229:20171
-      Environment=NO_PROXY=localhost,127.0.0.0/8
-' > /etc/systemd/system/containerd.service.d/http-proxy.conf
-systemctl daemon-reload && systemctl restart containerd
 kubeadm config images pull
 
 # Configure ssh

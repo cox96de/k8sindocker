@@ -18,7 +18,7 @@ def main():
             f"-v {root}/scripts:/images/ "
             "-v /tmp/console/:/tmp "
             "-d "
-            "cox96de/containervm "
+            "cox96de/containervm:master "
             "-- "
             "qemu-system-x86_64 "
             "-nodefaults "
@@ -36,6 +36,7 @@ def main():
         container_ip = run_output(
             "docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' " + docker_container_name)
         echo("container ip: " + container_ip)
+        run(f"chmod 600 {root}/ssh.private")
         ssh_args = f"-i {root}/ssh.private -o StrictHostKeyChecking=no"
         try_until_success_or_timeout(
             f"ssh {ssh_args} newsuper@{container_ip} 'echo success'")
