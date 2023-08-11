@@ -1,0 +1,20 @@
+name: Test
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Test
+        run: |
+          sudo apt-get update && sudo apt-get -y install qemu-utils genisoimage
+          cd scripts
+          python3 01-download-base-image.py
+          python3 02-setup-kube-base-image.py
