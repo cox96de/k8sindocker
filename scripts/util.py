@@ -23,7 +23,21 @@ def run_output(args) -> str:
     :return:
     """
     echo("+ " + args)
-    return subprocess.check_output(args=args, shell=True).decode("utf-8").strip()
+    process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output = ""
+
+    for i in process.stdout:
+        output += i.decode('utf-8')
+        print(i.decode('utf-8'), end='')
+
+    process.wait()
+    output = output.strip()
+    error = process.stderr.read().decode('utf-8').strip()
+
+    if process.returncode != 0:
+        raise subprocess.CalledProcessError(process.returncode, args, output=output, stderr=error)
+
+    return output
 
 
 def try_until_success_or_timeout(args, timeout=60):

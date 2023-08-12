@@ -1,19 +1,19 @@
 set -ex
 # Uncomment the following lines if you are in China
-#echo 'deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free
-#      # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free
-#
-#      deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-updates main contrib non-free
-#      # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-updates main contrib non-free
-#
-#      deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-backports main contrib non-free
-#      # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-backports main contrib non-free
-#
-#      deb https://mirrors.tuna.tsinghua.edu.cn/debian-security bullseye-security main contrib non-free
-#      # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security bullseye-security main contrib non-free
-#
-#      # deb https://security.debian.org/debian-security bullseye-security main contrib non-free
-#      # # deb-src https://security.debian.org/debian-security bullseye-security main contrib non-free' > /etc/apt/sources.list
+echo 'deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free
+      # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free
+
+      deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-updates main contrib non-free
+      # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-updates main contrib non-free
+
+      deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-backports main contrib non-free
+      # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-backports main contrib non-free
+
+      deb https://mirrors.tuna.tsinghua.edu.cn/debian-security bullseye-security main contrib non-free
+      # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security bullseye-security main contrib non-free
+
+      # deb https://security.debian.org/debian-security bullseye-security main contrib non-free
+      # # deb-src https://security.debian.org/debian-security bullseye-security main contrib non-free' > /etc/apt/sources.list
 
 apt-get update
 apt-get install -y \
@@ -55,6 +55,7 @@ sysctl --system
 
 containerd config default > /etc/containerd/config.toml
 sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+sed -i 's/\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\]/\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\]\n        \[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\."k8s\.gcr\.io"\]\n          endpoint = \["k8s-gcr\.m\.daocloud\.io"\]\n        \[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\."registry\.k8s\.io"\]\n          endpoint = \["k8s\.m\.daocloud\.io"\]/' /etc/containerd/config.toml
 systemctl daemon-reload && systemctl restart containerd
 
 # Install kubernetes
@@ -67,6 +68,9 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B53DC80D13EDEF05
 apt-get update
 apt-get install -y kubelet kubeadm kubectl cri-tools
 
+mkdir -p /etc/systemd/system/containerd.service.d/
+# Proxy for docker image downloading.
+systemctl daemon-reload && systemctl restart containerd
 kubeadm config images pull
 
 # Configure ssh

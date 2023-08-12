@@ -9,7 +9,7 @@ def main():
     echo("generating base qcow2 image")
     run("qemu-img create -f qcow2 -b debian-11-genericcloud-amd64.qcow2 -F qcow2 kube-base.qcow2 128G")
     echo("generate cloud-init iso")
-    run(f"genisoimage  -output cloudinit.iso -volid cidata -joliet -rock "
+    run(f"genisoimage -output cloudinit.iso -volid cidata -joliet -rock "
         f"{root}/cloud-init/meta-data "
         f"{root}/cloud-init/user-data")
     try:
