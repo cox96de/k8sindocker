@@ -1,0 +1,71 @@
+version: "3"
+services:
+  master00:
+    image: &image cox96de/containervm
+    hostname: master00
+    privileged: true
+    environment:
+      IMAGE_NAME: "master-00.qcow2"
+    volumes: &volumes
+      - ./:/images
+    entrypoint: &entrypoint /bin/bash
+    command: &command
+      - -c
+      - "/opt/containervm -- \
+      qemu-system-x86_64 \
+      -nodefaults \
+      --nographic \
+      -display none \
+      -smp 6,sockets=1,cores=6,threads=1 \
+      -m 4096M \
+      -device virtio-balloon-pci,id=balloon0 \
+      -drive file=/images/$$IMAGE_NAME,format=qcow2,if=virtio,aio=threads,media=disk,cache=unsafe,snapshot=off \
+      -vnc 0.0.0.0:0 \
+      -device VGA \
+      -serial chardev:serial0 \
+      -chardev socket,id=serial0,path=/tmp/$$IMAGE_NAME_console.sock,server=on,wait=off"
+    networks:
+      mynet:
+        ipv4_address: 10.0.1.10
+  master01:
+    image: *image
+    hostname: master01
+    privileged: true
+    environment:
+      IMAGE_NAME: "master-01.qcow2"
+    networks:
+      mynet:
+        ipv4_address: 10.0.1.11
+    entrypoint: *entrypoint
+    command: *command
+    volumes: *volumes
+  master02:
+    image: *image
+    hostname: master02
+    privileged: true
+    entrypoint: *entrypoint
+    environment:
+      IMAGE_NAME: "master-02.qcow2"
+    networks:
+      mynet:
+        ipv4_address: 10.0.1.12
+    command: *command
+    volumes: *volumes
+  worker00:
+    image: *image
+    hostname: worker00
+    privileged: true
+    entrypoint: *entrypoint
+    environment:
+      IMAGE_NAME: "worker-00.qcow2"
+    networks:
+      mynet:
+        ipv4_address: 10.0.1.13
+    command: *command
+    volumes: *volumes
+networks:
+  mynet:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.0.1.0/24"
