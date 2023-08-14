@@ -21,9 +21,13 @@ def main():
             "cox96de/containervm:master "
             "-- "
             "qemu-system-x86_64 "
+            # q35 machine type seems to cannot detect the iso file.
+            "-machine type=pc,usb=off "
+            "-enable-kvm "
             "-nodefaults "
             "--nographic "
             "-display none "
+            "-cpu host "
             "-smp 4,sockets=1,cores=4,threads=1 "
             "-m 4096M "
             "-device virtio-balloon-pci,id=balloon0 "
