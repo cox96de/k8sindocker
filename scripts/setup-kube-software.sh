@@ -56,7 +56,8 @@ sysctl --system
 containerd config default > /etc/containerd/config.toml
 sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
 sed -i 's/\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\]/\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\]\n        \[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\."docker\.io"\]\n          endpoint = \["docker\.m\.daocloud\.io"\]/' /etc/containerd/config.toml
-sed -i 's/\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\]/\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\]\n        \[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\."k8s\.gcr\.io"\]\n          endpoint = \["k8s-gcr\.m\.daocloud\.io"\]\n        \[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\."registry\.k8s\.io"\]\n          endpoint = \["k8s\.m\.daocloud\.io"\]/' /etc/containerd/config.toml
+sed -i 's/\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\]/\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\]\n        \[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\."registry\.k8s\.io"\]\n          endpoint = \["k8s\.m\.daocloud\.io"\]/' /etc/containerd/config.toml
+sed -i 's/\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\]/\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\]\n        \[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.mirrors\."k8s\.gcr\.io"\]\n          endpoint = \["k8s-gcr\.m\.daocloud\.io"\]/' /etc/containerd/config.toml
 systemctl daemon-reload && systemctl restart containerd
 
 # Install kubernetes
@@ -72,7 +73,8 @@ apt-get install -y kubelet kubeadm kubectl cri-tools
 mkdir -p /etc/systemd/system/containerd.service.d/
 # Proxy for docker image downloading.
 systemctl daemon-reload && systemctl restart containerd
-kubeadm config images pull
+# If pre download images, `exec format error` occurs. Don't know why.
+#kubeadm config images pull
 
 # Configure ssh
 ssh-keygen -A
