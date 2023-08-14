@@ -2,7 +2,6 @@ version: "3"
 services:
   master00:
     image: &image cox96de/containervm
-    hostname: master00
     privileged: true
     environment:
       IMAGE_NAME: "master-00.qcow2"
@@ -13,6 +12,8 @@ services:
       - -c
       - "/opt/containervm -- \
       qemu-system-x86_64 \
+      --enable-kvm \
+      -machine type=pc,usb=off \
       -nodefaults \
       --nographic \
       -display none \
@@ -29,7 +30,6 @@ services:
         ipv4_address: 10.0.1.10
   master01:
     image: *image
-    hostname: master01
     privileged: true
     environment:
       IMAGE_NAME: "master-01.qcow2"
@@ -41,7 +41,6 @@ services:
     volumes: *volumes
   master02:
     image: *image
-    hostname: master02
     privileged: true
     entrypoint: *entrypoint
     environment:

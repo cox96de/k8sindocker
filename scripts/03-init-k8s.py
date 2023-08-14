@@ -44,8 +44,8 @@ def main():
                             "--apiserver-bind-port 6443 "
                             f"--control-plane-endpoint {master_ips[0]} "
                             "--cert-dir /etc/kubernetes/pki "
-                            "--pod-network-cidr 172.20.0.0/16,fdff:ffff:ffff::/48 "
-                            "--service-cidr 172.21.0.0/16,fdff:ffff:fffe::/108 "
+                            "--pod-network-cidr 10.244.0.0/24,fdff:ffff:ffff::/48 "
+                            "--service-cidr 10.245.0.0/24,fdff:ffff:fffe::/108 "
                             "--service-dns-domain cluster.local "
                             "--upload-certs'")
         token = re.search(r'--token (.*?)\s', output).group(1)
@@ -67,8 +67,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-# [plugins]
-#  [plugins."io.containerd.grpc.v1.cri".registry]
-#    [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-#      [plugins."io.containerd.grpc.v1.cri".registry.mirrors."k8s.gcr.io"]
-#        endpoint = ["registry.aliyuncs.com/google_containers"]
