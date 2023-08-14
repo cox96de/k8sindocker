@@ -1,12 +1,17 @@
 version: "3"
 services:
   master00:
-    image: &image cox96de/containervm
+    image: &image cox96de/containervm:master
     privileged: true
     environment:
       IMAGE_NAME: "master-00.qcow2"
     volumes: &volumes
       - ./:/images
+      # Mount host resolv.conf to fix DNS issue.
+      # DNS issue: The nameserver in the image controlled by docker-compose is not the host nameserver,
+      # and it is like 127.x.x.x.
+      # It's the one from the docker network. VM cannot use it.
+      - /etc/resolv.conf:/etc/resolv.conf
     entrypoint: &entrypoint /bin/bash
     command: &command
       - -c
